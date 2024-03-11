@@ -5,11 +5,9 @@ class RecommendationScreen extends StatelessWidget {
   RecommendationScreen({
     super.key,
     required this.typeOfPrediction,
-    required this.responseData,
   });
 
   final PredictionType typeOfPrediction;
-  final bool responseData;
 
   String recommendationMessage = ''' ''';
 

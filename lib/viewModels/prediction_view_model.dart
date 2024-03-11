@@ -4,6 +4,8 @@ import 'package:ai_health/utils/prediction_type.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 class PredictionViewModel {
   PredictionViewModel._();
 
@@ -76,6 +78,7 @@ class PredictionViewModel {
     String sexValue,
     String chestPainValue,
     PredictionType predictionType,
+    BuildContext context,
   ) async {
     var headers = {'Content-Type': 'application/json'};
 
@@ -141,6 +144,13 @@ class PredictionViewModel {
       }
     } catch (e) {
       print("API CATCH $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        action: SnackBarAction(
+          label: "Dismiss",
+          onPressed: () => ScaffoldMessengerState().removeCurrentSnackBar(),
+        ),
+      ));
       return -1;
     }
   }

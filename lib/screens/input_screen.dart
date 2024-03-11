@@ -67,6 +67,7 @@ class _InputScreenState extends State<InputScreen> {
       sexValue,
       chestPainValue,
       widget.predictionType,
+      context,
     )
         .then((value) {
       bool shouldShowRecommendation = false;
@@ -143,12 +144,9 @@ class _InputScreenState extends State<InputScreen> {
               isHigh
                   ? TextButton(
                       onPressed: () {
-                        bool isHigh = false;
-
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (cntxt) => RecommendationScreen(
-                              responseData: isHigh,
                               typeOfPrediction: widget.predictionType,
                             ),
                           ),
