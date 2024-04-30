@@ -1,10 +1,10 @@
-// ignore_for_file: avoid_print
-
 import 'package:ai_health/screens/recommendation_screen.dart';
 import 'package:ai_health/utils/prediction_type.dart';
 import 'package:ai_health/viewModels/prediction_view_model.dart';
+import 'package:ai_health/widgets/graph.dart';
 import 'package:ai_health/widgets/input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class InputScreen extends StatefulWidget {
   const InputScreen({super.key, required this.predictionType});
@@ -102,7 +102,6 @@ class _InputScreenState extends State<InputScreen> {
   Widget build(BuildContext context) {
     final isCholesterolPrediction =
         widget.predictionType == PredictionType.cholesterol;
-
     String screenTitle = "";
     switch (widget.predictionType) {
       case PredictionType.cholesterol:
@@ -163,90 +162,96 @@ class _InputScreenState extends State<InputScreen> {
   }
 
   Widget renderInputFields(bool isCholesterolPrediction) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      if (!isCholesterolPrediction)
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (!isCholesterolPrediction)
+          InputField(
+            title: "Glucose",
+            onSave: (value) => glucoseValue = value,
+          ),
+        if (isCholesterolPrediction ||
+            widget.predictionType == PredictionType.diabetes)
+          InputField(
+            title: "Blood Pressure",
+            onSave: (value) => bloodPressureValue = value,
+          ),
+        if (!isCholesterolPrediction)
+          InputField(
+            title: "Skin Thickness",
+            onSave: (value) => skinThicknessValue = value,
+          ),
+        if (!isCholesterolPrediction)
+          InputField(
+            title: "Insulin",
+            onSave: (value) => insulinValue = value,
+          ),
+        if (!isCholesterolPrediction)
+          InputField(
+            title: "BMI",
+            onSave: (value) => bmiValue = value,
+          ),
+        if (!isCholesterolPrediction)
+          InputField(
+            title: "Diabetes Pedigree Function",
+            onSave: (value) => diabetesPedigreeFunctionValue = value,
+          ),
         InputField(
-          title: "Glucose",
-          onSave: (value) => glucoseValue = value,
+          title: "Age",
+          onSave: (value) => ageValue = value,
         ),
-      if (isCholesterolPrediction ||
-          widget.predictionType == PredictionType.diabetes)
-        InputField(
-          title: "Blood Pressure",
-          onSave: (value) => bloodPressureValue = value,
-        ),
-      if (!isCholesterolPrediction)
-        InputField(
-          title: "Skin Thickness",
-          onSave: (value) => skinThicknessValue = value,
-        ),
-      if (!isCholesterolPrediction)
-        InputField(
-          title: "Insulin",
-          onSave: (value) => insulinValue = value,
-        ),
-      if (!isCholesterolPrediction)
-        InputField(
-          title: "BMI",
-          onSave: (value) => bmiValue = value,
-        ),
-      if (!isCholesterolPrediction)
-        InputField(
-          title: "Diabetes Pedigree Function",
-          onSave: (value) => diabetesPedigreeFunctionValue = value,
-        ),
-      InputField(
-        title: "Age",
-        onSave: (value) => ageValue = value,
-      ),
-      if (isCholesterolPrediction)
-        InputField(
-          title: "Sex (Male: 1 | Female: 0)",
-          onSave: (value) => sexValue = value,
-        ),
-      if (isCholesterolPrediction)
-        InputField(
-          title: "Chest Pain Level",
-          onSave: (value) => chestPainValue = value,
-        ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: onSubmit,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 10, horizontal: 20), // Increase horizontal padding
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30), // Make it circular
+        if (isCholesterolPrediction)
+          InputField(
+            title: "Sex (Male: 1 | Female: 0)",
+            onSave: (value) => sexValue = value,
+          ),
+        if (isCholesterolPrediction)
+          InputField(
+            title: "Chest Pain Level",
+            onSave: (value) => chestPainValue = value,
+          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: onSubmit,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 20), // Increase horizontal padding
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30), // Make it circular
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Use min size of the Row
+                children: const [
+                  Text('PREDICT'),
+                  SizedBox(width: 5), // Space between text and icon
+                ],
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min, // Use min size of the Row
-              children: const [
-                Text('PREDICT'),
-                SizedBox(width: 5), // Space between text and icon
-              ],
-            ),
-          ),
-          SizedBox(width: 20), // Increase distance between buttons
-          ElevatedButton(
-            onPressed: () {
+            SizedBox(width: 20), // Increase distance between buttons
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LineChartPage()),
+                );
+              },
               // Functionality for the graph button
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(10), // Make padding equal on all sides
-              shape: CircleBorder(), // Make it a perfect circle
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.all(10), // Make padding equal on all sides
+                shape: CircleBorder(), // Make it a perfect circle
+              ),
+              child: Icon(Icons.show_chart), // Using chart icon
             ),
-            child: Icon(Icons.show_chart), // Using chart icon
-          ),
-        ],
-      ),
-    ],
-  );
-}
+          ],
+        ),
+      ],
+    );
+  }
 
   AlertDialog processingDialog() {
     return const AlertDialog(
