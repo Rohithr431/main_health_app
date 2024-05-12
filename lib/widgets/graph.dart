@@ -1,5 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart'; //flcharts charts plugin
+import 'package:path_to_inputscreen/inputscreen.dart';
+
+
+
 
 void main() => runApp(MainApp());
 
@@ -56,6 +61,8 @@ class LineChartPage extends StatelessWidget {
 
 
 class LineChartContainer extends StatelessWidget {
+  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -66,9 +73,16 @@ class LineChartContainer extends StatelessWidget {
       child: ListView(
         children: [
           AspectRatio(
-            aspectRatio: 1.70,
-            child: CustomLineChart(),
-          ),
+  aspectRatio: 1.70,
+  child: CustomLineChart(
+    cholesterolSpots: cholesterolSpots,
+    predictedCholesterol: 0, // Provide the predicted cholesterol value here
+    onPredictionReceived: (newValue) { // Define the behavior when a new prediction is received
+      // Update the cholesterol spots list with the new predicted value
+      cholesterolSpots.add(FlSpot(cholesterolSpots.length.toDouble(), newValue));
+    },
+  ),
+),
           SizedBox(height: 20),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 15),
@@ -119,43 +133,29 @@ class LineChartContainer extends StatelessWidget {
 
 
 class CustomLineChart extends StatelessWidget {
-  // Example data for predicted cholesterol values
-  final List<FlSpot> cholesterolSpots = [
-    FlSpot(0, 180), // Week 1
-    FlSpot(1, 190), // Week 2
-    FlSpot(2, 200), // Week 3
-    FlSpot(3, 195), // Week 4
-    FlSpot(4, 205), // Week 5
-    FlSpot(5, 210), // Week 6
-  ];
+  final List<FlSpot> cholesterolSpots;
+  final double predictedCholesterol;
+  final void Function(double) onPredictionReceived; // Add this line
 
-  // Example data for expected cholesterol range (min and max)
-  final List<FlSpot> expectedMinSpots = [
-    FlSpot(0, 170),
-    FlSpot(1, 175),
-    FlSpot(2, 180),
-    FlSpot(3, 178),
-    FlSpot(4, 183),
-    FlSpot(5, 185),
-  ];
+  CustomLineChart({
+    required this.cholesterolSpots,
+    required this.predictedCholesterol,
+    required this.onPredictionReceived, // Add callback function parameter
+  });
 
-  final List<FlSpot> expectedMaxSpots = [
-    FlSpot(0, 190),
-    FlSpot(1, 195),
-    FlSpot(2, 200),
-    FlSpot(3, 198),
-    FlSpot(4, 203),
-    FlSpot(5, 205),
-  ];
 
 
   @override
   Widget build(BuildContext context) {
+    // Update cholesterolSpots list with the predicted cholesterol value
+    List<FlSpot> updatedCholesterolSpots = List.from(cholesterolSpots);
+    updatedCholesterolSpots.add(FlSpot(cholesterolSpots.length.toDouble(), predictedCholesterol));
+
     return LineChart(
       LineChartData(
         lineBarsData: [
           LineChartBarData(
-            spots: cholesterolSpots,
+            spots: updatedCholesterolSpots,
             isCurved: true,
             color: Colors.blue, // Corrected to 'colors' which takes a list
             barWidth: 4,
@@ -164,24 +164,6 @@ class CustomLineChart extends StatelessWidget {
               show: true,
               color: Colors.blue.withOpacity(0.3), // Corrected to 'colors' which takes a list
             ),
-          ),
-          LineChartBarData(
-            spots: expectedMinSpots,
-            isCurved: true,
-            color: Colors.green, // Corrected to 'colors' which takes a list
-            barWidth: 2,
-            isStrokeCapRound: true,
-            dotData: FlDotData(show: false),
-            belowBarData: BarAreaData(show: false),
-          ),
-          LineChartBarData(
-            spots: expectedMaxSpots,
-            isCurved: true,
-            color: Colors.red, // Corrected to 'colors' which takes a list
-            barWidth: 2,
-            isStrokeCapRound: true,
-            dotData: FlDotData(show: false),
-            belowBarData: BarAreaData(show: false),
           ),
         ],
         titlesData: FlTitlesData(
