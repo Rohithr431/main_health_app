@@ -6,6 +6,8 @@ import 'package:ai_health/widgets/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+
+
 class InputScreen extends StatefulWidget {
   const InputScreen({super.key, required this.predictionType});
 
@@ -18,6 +20,7 @@ class InputScreen extends StatefulWidget {
 
 class _InputScreenState extends State<InputScreen> {
   final predictionViewModel = PredictionViewModel();
+  List<FlSpot> cholesterolSpots = [];
   bool isBusy = false;
   bool isHigh = false;
   int responseData = 0;
@@ -31,6 +34,13 @@ class _InputScreenState extends State<InputScreen> {
   String ageValue = "0";
   String sexValue = "0";
   String chestPainValue = "0";
+
+  void onPredictionReceived(double newValue) {
+    setState(() {
+      cholesterolSpots.add(FlSpot(cholesterolSpots.length.toDouble(), newValue));
+    });
+  }
+
 
   void onSubmit() async {
     if (!InputScreen._formKey.currentState!.validate()) {
@@ -93,6 +103,8 @@ class _InputScreenState extends State<InputScreen> {
         isBusy = false;
         isHigh = shouldShowRecommendation;
         responseData = value;
+        cholesterolSpots.add(FlSpot(cholesterolSpots.length.toDouble(), value.toDouble()));
+        onPredictionReceived(value.toDouble());
       });
       Navigator.of(context).pop();
     });
@@ -126,6 +138,16 @@ class _InputScreenState extends State<InputScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+               CustomLineChart(
+                cholesterolSpots: cholesterolSpots,
+                predictedCholesterol: responseData.toDouble(),
+                onPredictionReceived: (newValue) {
+              setState(() {
+      // Append the new predicted cholesterol value to the list
+                cholesterolSpots.add(FlSpot(cholesterolSpots.length.toDouble(), newValue));
+              });
+              },
+              ),
               renderInputFields(isCholesterolPrediction),
               const SizedBox(height: 50),
               CircleAvatar(
@@ -178,11 +200,6 @@ class _InputScreenState extends State<InputScreen> {
           ),
         if (!isCholesterolPrediction)
           InputField(
-            title: "Skin Thickness",
-            onSave: (value) => skinThicknessValue = value,
-          ),
-        if (!isCholesterolPrediction)
-          InputField(
             title: "Insulin",
             onSave: (value) => insulinValue = value,
           ),
@@ -190,11 +207,6 @@ class _InputScreenState extends State<InputScreen> {
           InputField(
             title: "BMI",
             onSave: (value) => bmiValue = value,
-          ),
-        if (!isCholesterolPrediction)
-          InputField(
-            title: "Diabetes Pedigree Function",
-            onSave: (value) => diabetesPedigreeFunctionValue = value,
           ),
         InputField(
           title: "Age",
