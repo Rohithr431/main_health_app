@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart'; //flcharts charts plugin
-import 'package:path_to_inputscreen/inputscreen.dart';
+import 'package:ai_health/screens/input_screen.dart'; //importing the line chart page
 
 
 
@@ -9,6 +9,7 @@ import 'package:path_to_inputscreen/inputscreen.dart';
 void main() => runApp(MainApp());
 
 class MainApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,6 +19,7 @@ class MainApp extends StatelessWidget {
 }
 
 class LineChartPage extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,8 +46,9 @@ class LineChartPage extends StatelessWidget {
                 color: Colors.black,
               ),
             ),
-            LineChartContainer(),
-            // ... Other widgets if any
+            LineChartContainer(
+              cholesterolSpots: [], // Initial empty list of FlSpots
+            ),
           ],
         ),
       ),
@@ -53,16 +56,9 @@ class LineChartPage extends StatelessWidget {
   }
 }
 
-
-
-
-// Rest of the code remains unchanged...
-
-
-
 class LineChartContainer extends StatelessWidget {
-  
-
+  final List<FlSpot> cholesterolSpots;
+  LineChartContainer({required this.cholesterolSpots});
   @override
   Widget build(BuildContext context) {
     return Container(
